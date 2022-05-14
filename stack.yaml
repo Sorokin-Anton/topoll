@@ -1,0 +1,7 @@
+resolver:
+  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
+
+extra-deps:
+- git: https://github.com/Sorokin-Anton/QLinear
+  commit: f2e638e6c5a9fe53c78f1194ce123f01899b6558
+- SmithNormalForm-0.1.0.0@sha256:c941b6cff6db301d933e1cf0cfadaa145b74939e8ad6e004348db46e71b76f72,1280

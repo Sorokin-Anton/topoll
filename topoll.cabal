@@ -1,0 +1,71 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           topoll
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/topoll#readme>
+homepage:       https://github.com/githubuser/topoll#readme
+bug-reports:    https://github.com/githubuser/topoll/issues
+author:         Anton Sorokin
+maintainer:     ams200140@gmail.com
+copyright:      2022 Anton Sorokin
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/topoll
+
+library
+  exposed-modules:
+      Topoll.ChainComplex.Field
+      Topoll.ChainComplex.Integers
+      Topoll.ChainComplex.Type
+  other-modules:
+      Paths_topoll
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      SmithNormalForm
+    , base >=4.7 && <5
+    , finite-typelits
+    , qlinear
+  default-language: Haskell2010
+
+executable topoll-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_topoll
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SmithNormalForm
+    , base >=4.7 && <5
+    , finite-typelits
+    , qlinear
+    , topoll
+  default-language: Haskell2010
+
+test-suite topoll-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_topoll
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SmithNormalForm
+    , base >=4.7 && <5
+    , finite-typelits
+    , qlinear
+    , topoll
+  default-language: Haskell2010
