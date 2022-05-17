@@ -108,15 +108,11 @@ simplicialComplex sc = addZeroToRight $  buildChainComplex $ reverse (tail $ spl
               matrix :: Matrix y n a
               matrix = Matrix (fromInteger $ natVal (Proxy @y), fromInteger $ natVal (Proxy @n))
                 (transpose rows)
-           in case addToRight prevCC matrix of
-            Nothing -> error "simplicialComplex: incompatible matrices (d^2 /= 0?)"
-            Just cc -> SomeChainComplex cc
+           in SomeChainComplex $ UnsafeAddToRight prevCC matrix
       _ -> error "Malformed SomeChainComplex"
 
     addZeroToRight :: SomeChainComplex a -> SomeChainComplex a
-    addZeroToRight (SomeChainComplex cc@(UnsafeAddToRight _ _)) = case addToRight cc (zeroMatrix @_ @0) of
-      Just newCC -> SomeChainComplex newCC
-      Nothing -> error "addZeroToRight  failed"
+    addZeroToRight (SomeChainComplex cc@(UnsafeAddToRight _ _)) = SomeChainComplex $ UnsafeAddToRight cc (zeroMatrix @_ @0)
     addZeroToRight (SomeChainComplex ZeroComplex) = SomeChainComplex . fromJust $ startComplex @0 @a
 
 simplicialHomologyOverQ :: SimplicialSet -> [Integer]
