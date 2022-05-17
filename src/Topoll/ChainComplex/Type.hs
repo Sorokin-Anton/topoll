@@ -21,6 +21,9 @@ data ChainComplex (a :: Type) (dimensions :: [Nat]) where -- chain complex of f.
   ZeroComplex :: ChainComplex a '[0]
   UnsafeAddToRight :: KnownNat y => ChainComplex a (x ': xs) -> Matrix x y a -> ChainComplex a (y ': x ': xs) -- inductively adds `a^y` to right
 
+data SomeChainComplex a where
+  SomeChainComplex :: ChainComplex a dims -> SomeChainComplex a
+
 addToRight :: (Num a, Eq a, KnownNat y) => ChainComplex a (x ': xs) -> Matrix x y a -> Maybe (ChainComplex a (y ': x ': xs))
 addToRight ZeroComplex m = Just (UnsafeAddToRight ZeroComplex m)
 addToRight old@(UnsafeAddToRight _ m1) m2 | all (all (== 0)) $ value (m1 ~*~ m2) = Just (UnsafeAddToRight old m2)
