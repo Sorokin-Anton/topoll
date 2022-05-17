@@ -20,6 +20,9 @@ dependencies:
 - finite-typelits
 - qlinear
 - SmithNormalForm
+- vector
+- vector-algorithms
+- containers
 
 library:
   source-dirs: src

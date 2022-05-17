@@ -27,6 +27,7 @@ library
       Topoll.ChainComplex.Field
       Topoll.ChainComplex.Integers
       Topoll.ChainComplex.Type
+      Topoll.Witness.Witness
   other-modules:
       Paths_topoll
   hs-source-dirs:
@@ -35,8 +36,11 @@ library
   build-depends:
       SmithNormalForm
     , base >=4.7 && <5
+    , containers
     , finite-typelits
     , qlinear
+    , vector
+    , vector-algorithms
   default-language: Haskell2010
 
 executable topoll-exe
@@ -49,9 +53,12 @@ executable topoll-exe
   build-depends:
       SmithNormalForm
     , base >=4.7 && <5
+    , containers
     , finite-typelits
     , qlinear
     , topoll
+    , vector
+    , vector-algorithms
   default-language: Haskell2010
 
 test-suite topoll-test
@@ -65,7 +72,10 @@ test-suite topoll-test
   build-depends:
       SmithNormalForm
     , base >=4.7 && <5
+    , containers
     , finite-typelits
     , qlinear
     , topoll
+    , vector
+    , vector-algorithms
   default-language: Haskell2010
