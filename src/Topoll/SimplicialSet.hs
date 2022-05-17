@@ -1,13 +1,23 @@
 {-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE DataKinds #-}
 module Topoll.SimplicialSet where
 
 import Control.Monad
-import Data.List (sort, sortOn, groupBy)
+import Data.List (sort, sortOn, groupBy, transpose)
 import qualified Data.Set as S
 import Topoll.ChainComplex.Field
 import qualified Data.Bifunctor
 import Data.Function (on)
 import Topoll.ChainComplex.Type
+import Data.Proxy
+import GHC.TypeLits
+import Data.Maybe (fromJust)
+import QLinear (Matrix)
+import Internal.Matrix (Matrix(..))
+import qualified Data.Map as M
 
 type Simplex  = S.Set Int
 
@@ -61,7 +71,7 @@ simplicialSetFullCheck lists = do
         else let
           simplex = S.fromList sortedList
 
-          in if all ((`S.member` s) . snd) (simplexBorder simplex) then
+          in if all (`S.member` s) (M.keys $ simplexBorder simplex) then
             Just $ S.insert simplex s
             else Nothing
 
@@ -76,11 +86,42 @@ splitBySizes :: SimplicialSet -> [SimplexsOfFixedSize]
 splitBySizes (UnsafeSimplicialSet s) = map (F  . S.fromAscList) $ groupOn S.size $ sortOn S.size $ S.toAscList s
   where groupOn f = groupBy ((==) `on` f)
 
-simplicialComplex :: Num a =>  SimplicialSet -> SomeChainComplex a
-simplicialComplex = undefined
+simplicialComplex :: forall a. (Num a, Eq a) => SimplicialSet -> SomeChainComplex a
+simplicialComplex sc = addZeroToRight $  buildChainComplex $ reverse (tail $ splitBySizes sc) -- tail removes []
+  where
+    buildChainComplex :: [SimplexsOfFixedSize] -> SomeChainComplex a
+    buildChainComplex [] = SomeChainComplex ZeroComplex
+    buildChainComplex [F s] = case someNatVal (fromIntegral $ length s) of
+      Nothing -> error "No someNatVal?"
+      Just (SomeNat (Proxy :: Proxy n)) -> SomeChainComplex . fromJust $ startComplex @n @a
+    buildChainComplex (F highestGrade : F prevGrade : rest) = case buildChainComplex (F prevGrade : rest) of
+      SomeChainComplex prevCC@(UnsafeAddToRight _ (_ :: Matrix x y a)) -> case someNatVal (fromIntegral $ length highestGrade) of
+        Nothing -> error "No someNatVal?"
+        Just (SomeNat (Proxy :: Proxy n)) ->
+          let
+              rows :: [[a]]
+              rows = map (\s -> map (\q -> case simplexBorder s M.!? q of
+                Nothing -> 0
+                Just Plus -> 1
+                Just Minus -> -1) $ S.toAscList prevGrade) $ S.toAscList highestGrade
+
+              matrix :: Matrix y n a
+              matrix = Matrix (fromInteger $ natVal (Proxy @y), fromInteger $ natVal (Proxy @n))
+                (transpose rows)
+           in case addToRight prevCC matrix of
+            Nothing -> error "simplicialComplex: incompatible matrices (d^2 /= 0?)"
+            Just cc -> SomeChainComplex cc
+      _ -> error "Malformed SomeChainComplex"
+
+    addZeroToRight :: SomeChainComplex a -> SomeChainComplex a
+    addZeroToRight (SomeChainComplex cc@(UnsafeAddToRight _ _)) = case addToRight cc (zeroMatrix @_ @0) of
+      Just newCC -> SomeChainComplex newCC
+      Nothing -> error "addZeroToRight  failed"
+    addZeroToRight (SomeChainComplex ZeroComplex) = SomeChainComplex . fromJust $ startComplex @0 @a
 
 simplicialHomologyOverQ :: SimplicialSet -> [Integer]
-simplicialHomologyOverQ s = bettiNumbers undefined
+simplicialHomologyOverQ sc = case simplicialComplex sc of
+  SomeChainComplex cc -> bettiNumbers cc
 -- >>> simplicialHomologyOverQ simplicial2dSphere
 
 
@@ -89,11 +130,11 @@ reverseSign :: Sign -> Sign
 reverseSign Plus = Minus
 reverseSign Minus = Plus
 
-simplexBorder :: Simplex -> [(Sign, Simplex)]
-simplexBorder = map (Data.Bifunctor.second S.fromAscList) . helper Plus . S.toAscList where
-  helper :: Sign -> [Int] -> [(Sign, [Int])]
+simplexBorder :: Simplex -> M.Map Simplex Sign
+simplexBorder = M.fromList . map (Data.Bifunctor.first S.fromAscList) . helper Plus . S.toAscList where
+  helper :: Sign -> [Int] -> [([Int], Sign)]
   helper _ [] = []
-  helper sign (x:xs) = (sign, xs) : map (Data.Bifunctor.second (x:)) (helper (reverseSign sign) xs)
+  helper sign (x:xs) = (xs, sign) : map (Data.Bifunctor.first (x:)) (helper (reverseSign sign) xs)
 
 -- >>> simplexBorder [1,2,3,4,5]
 -- [(Plus,fromList [2,3,4,5]),(Minus,fromList [1,3,4,5]),(Plus,fromList [1,2,4,5]),(Minus,fromList [1,2,3,5]),(Plus,fromList [1,2,3,4])]

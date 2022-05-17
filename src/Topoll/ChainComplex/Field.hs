@@ -37,4 +37,4 @@ kernelDimension m = natVal (Proxy :: Proxy n) - matrixRankOverField m
 bettiNumbers :: ChainComplex (Ratio Integer) dimensions -> [Integer]
 bettiNumbers ZeroComplex = []
 bettiNumbers (UnsafeAddToRight ZeroComplex _) = []
-bettiNumbers (UnsafeAddToRight (UnsafeAddToRight rest m1) m2) = bettiNumbers rest ++ [kernelDimension m1 - imageDimension m2]
+bettiNumbers (UnsafeAddToRight rest@(UnsafeAddToRight _ m1) m2) = bettiNumbers rest ++ [kernelDimension m1 - imageDimension m2]
