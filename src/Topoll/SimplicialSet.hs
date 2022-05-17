@@ -14,8 +14,38 @@ type Simplex  = S.Set Int
 newtype SimplicialSet = UnsafeSimplicialSet (S.Set Simplex)
 instance Show SimplicialSet where  show (UnsafeSimplicialSet a) = show $ map S.toAscList (S.toAscList a)
 
-simplicialSet :: [[Int]] -> Maybe SimplicialSet
-simplicialSet lists = do
+simplicialSet :: S.Set Simplex -> SimplicialSet
+simplicialSet = UnsafeSimplicialSet . S.unions . S.map S.powerSet
+
+mkSimplicialSet :: [[Int]] -> SimplicialSet
+mkSimplicialSet = simplicialSet . S.fromList . map S.fromList
+
+noDuplicates :: Ord a => [a] -> Bool
+noDuplicates list = length list == S.size (S.fromList list)
+
+mkSimplicialSetNoDups :: [[Int]] -> Maybe SimplicialSet
+mkSimplicialSetNoDups lists = do
+  if not . all noDuplicates $ lists
+    then Nothing
+    else Just ()
+  let listSimplexs = map S.fromList lists
+  if not $ noDuplicates listSimplexs
+    then Nothing
+    else Just ()
+  return $ mkSimplicialSet lists
+
+vertices :: SimplicialSet -> S.Set Int
+vertices (UnsafeSimplicialSet s) = S.unions s
+
+neighbours :: SimplicialSet -> Int -> S.Set Int
+neighbours (UnsafeSimplicialSet s) n = S.fromList $ do
+  simpl <- S.toList s
+  if S.size simpl == 2 && S.member n simpl
+  then S.toList $ S.delete n simpl
+  else []
+
+simplicialSetFullCheck :: [[Int]] -> Maybe SimplicialSet
+simplicialSetFullCheck lists = do
   let sorted = sortOn (\x -> (length x, x)) $ map sort lists
   if containsDuplicates sorted
     then Nothing
@@ -36,7 +66,7 @@ simplicialSet lists = do
             else Nothing
 
 simplicial2dSphere :: SimplicialSet
-Just simplicial2dSphere = simplicialSet
+simplicial2dSphere = mkSimplicialSet
   [[],
   [1],[2],[3],
   [1,2],[1,3],[2,3]]
@@ -67,3 +97,35 @@ simplexBorder = map (Data.Bifunctor.second S.fromAscList) . helper Plus . S.toAs
 
 -- >>> simplexBorder [1,2,3,4,5]
 -- [(Plus,fromList [2,3,4,5]),(Minus,fromList [1,3,4,5]),(Plus,fromList [1,2,4,5]),(Minus,fromList [1,2,3,5]),(Plus,fromList [1,2,3,4])]
+
+flagN :: Maybe Int -> SimplicialSet -> SimplicialSet
+flagN Nothing s = flagN (Just . S.size $ vertices s) s
+flagN (Just n) s = foldr (\f g -> g . f) id (map flag' [1..n]) s
+ where
+  flag' :: Int -> SimplicialSet -> SimplicialSet
+  flag' n' sc@(UnsafeSimplicialSet s') = UnsafeSimplicialSet . S.union s' . S.fromList $ do
+    nSimpl <- S.toList $ S.filter ((== n') . S.size) s'
+    let allNeighbours = S.map (neighbours sc) nSimpl
+    commonNeighbour <- S.toList $ foldl S.intersection
+      (if null allNeighbours then mempty else S.elemAt 0 allNeighbours) allNeighbours
+    return $ S.insert commonNeighbour nSimpl
+
+flag :: SimplicialSet -> SimplicialSet
+flag = flagN Nothing
+
+testSC :: SimplicialSet
+testSC = mkSimplicialSet [
+  [1, 2],
+  [2, 3],
+  [1, 3],
+  [1, 4]
+ ]
+
+-- saveSimpl :: SimplicialSet -> IO ()
+-- saveSimpl (UnsafeSimplicialSet s) = writeFile "simp.simp" . intercalate "\n" . map (unwords . map show . S.toList) . S.toList $ s
+
+-- >>> mkSimplicialSetNoDups [[1, 2],[2, 3],[1, 3],[1, 4] ]
+-- Just [[],[1],[1,2],[1,3],[1,4],[2],[2,3],[3],[4]]
+
+-- >>> show $ flag $ testSC
+-- /home/imobulus/imobulus/hse/4th-year/topan/topoll/src/Topoll/SimplicialSet.hs:(103,1)-(108,2): Non-exhaustive patterns in Just testSC

@@ -3,8 +3,10 @@ module Topoll.Witness.Witness where
 import qualified Data.Vector as V
 import Data.Vector ( (!?), modify, Vector, enumFromN )
 import qualified Data.Set as S
-import Data.Set ( insert, union, unions, Set, powerSet, delete, intersection, elemAt )
+import Data.Set ( insert, union, Set )
 import qualified Data.Vector.Algorithms.Merge as VA
+
+import Topoll.SimplicialSet
 
 ithSmallest :: Vector Float -> Int -> Maybe Float
 ithSmallest vec i = vecSorted !? (i-1) where
@@ -46,40 +48,8 @@ edges dd r nu = edges' $ take (V.length dd) $ enumFrom (0 :: Int) where
     restEdges <- edges' is
     return $ wEdges `union` restEdges
 
-newtype SimplicialComplex = UnsafeSimplicialComplex {
-  simplices :: Set (Set Int)
-} deriving Show
-
-simplicialComplex :: Set (Set Int) -> SimplicialComplex
-simplicialComplex = UnsafeSimplicialComplex . unions . S.map powerSet
-
-vertices :: SimplicialComplex -> Set Int
-vertices (UnsafeSimplicialComplex s) = unions s
-
-neighbours :: SimplicialComplex -> Int -> Set Int
-neighbours (UnsafeSimplicialComplex s) n = S.fromList $ do
-  simpl <- S.toList s
-  if S.size simpl == 2 && S.member n simpl
-  then S.toList $ delete n simpl
-  else []
-
-flagN :: Maybe Int -> SimplicialComplex -> SimplicialComplex
-flagN Nothing s = flagN (Just . S.size $ vertices s) s
-flagN (Just n) s = foldr (\f g -> g . f) id (map flag' [1..n]) s
- where
-  flag' :: Int -> SimplicialComplex -> SimplicialComplex
-  flag' n' sc@(UnsafeSimplicialComplex s') = UnsafeSimplicialComplex  . union s' . S.fromList $ do
-    nSimpl <- S.toList $ S.filter ((== n') . S.size) s'
-    let allNeighbours = S.map (neighbours sc) nSimpl
-    commonNeighbour <- S.toList $ foldl intersection
-      (if null allNeighbours then mempty else elemAt 0 allNeighbours) allNeighbours
-    return $ insert commonNeighbour nSimpl
-
-flag :: SimplicialComplex -> SimplicialComplex
-flag = flagN Nothing
-
-witnessComplex :: Vector (Vector Float) -> Float -> Int -> Either String SimplicialComplex
-witnessComplex dd r nu = do
+witnessSet :: Vector (Vector Float) -> Float -> Int -> Either String SimplicialSet
+witnessSet dd r nu = do
   edg <- edges dd r nu
-  let complex0 = simplicialComplex $ S.map (\(a, b) -> S.fromList [a, b]) edg
+  let complex0 = simplicialSet $ S.map (\(a, b) -> S.fromList [a, b]) edg
   return $ flag complex0
