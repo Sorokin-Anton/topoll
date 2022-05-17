@@ -27,7 +27,7 @@ library
       Topoll.ChainComplex.Field
       Topoll.ChainComplex.Integers
       Topoll.ChainComplex.Type
-      Topoll.SymplicialSet
+      Topoll.SimplicialSet
       Topoll.Witness.Witness
   other-modules:
       Paths_topoll
