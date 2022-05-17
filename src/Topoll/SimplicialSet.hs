@@ -98,9 +98,8 @@ simplexBorder = map (Data.Bifunctor.second S.fromAscList) . helper Plus . S.toAs
 -- >>> simplexBorder [1,2,3,4,5]
 -- [(Plus,fromList [2,3,4,5]),(Minus,fromList [1,3,4,5]),(Plus,fromList [1,2,4,5]),(Minus,fromList [1,2,3,5]),(Plus,fromList [1,2,3,4])]
 
-flagN :: Maybe Int -> SimplicialSet -> SimplicialSet
-flagN Nothing s = flagN (Just . S.size $ vertices s) s
-flagN (Just n) s = foldr (\f g -> g . f) id (map flag' [1..n]) s
+flagN :: Int -> SimplicialSet -> SimplicialSet -- adds simplices up to dimension n with all edges present in original simplicial set
+flagN n = foldr (\f g -> g . f) id (map flag' [1..n])
  where
   flag' :: Int -> SimplicialSet -> SimplicialSet
   flag' n' sc@(UnsafeSimplicialSet s') = UnsafeSimplicialSet . S.union s' . S.fromList $ do
@@ -110,8 +109,8 @@ flagN (Just n) s = foldr (\f g -> g . f) id (map flag' [1..n]) s
       (if null allNeighbours then mempty else S.elemAt 0 allNeighbours) allNeighbours
     return $ S.insert commonNeighbour nSimpl
 
-flag :: SimplicialSet -> SimplicialSet
-flag = flagN Nothing
+flag :: SimplicialSet -> SimplicialSet -- adds all simplices all of which edges are present. Needs optimization
+flag s = flagN (S.size $ vertices s) s
 
 testSC :: SimplicialSet
 testSC = mkSimplicialSet [
