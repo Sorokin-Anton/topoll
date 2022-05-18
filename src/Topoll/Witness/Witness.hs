@@ -51,5 +51,28 @@ edges dd r nu = edges' $ take (V.length dd) $ enumFrom (0 :: Int) where
 witnessSet :: Vector (Vector Float) -> Float -> Int -> Either String SimplicialSet
 witnessSet dd r nu = do
   edg <- edges dd r nu
-  let complex0 = simplicialSet $ S.map (\(a, b) -> S.fromList [a, b]) edg
+  let allEdges = S.map (\(a, b) -> S.fromList [a, b]) edg
+  let allVertices = case dd !? 0 of
+        Nothing -> S.empty :: Set (Set Int)
+        Just v -> S.fromList . map S.singleton . take (V.length v) $ [0, 1 ..]
+  let complex0 = simplicialSet $ S.union allEdges allVertices
   return $ flag complex0
+
+-- TEST
+
+distance :: (Float, Float) -> (Float, Float) -> Float
+distance (a, b) (c, d) = sqrt $ (a - c) * (a - c) + (b - d) * (b - d)
+
+distanceMatrix :: [(Float, Float)] -> [(Float, Float)] -> Vector (Vector Float)
+distanceMatrix dataPoints landmarkPoints = V.fromList . map V.fromList $ distanceMatrixList dataPoints landmarkPoints where
+  distanceMatrixList [] _ = []
+  distanceMatrixList (p : ps) lPoints = map (distance p) lPoints : distanceMatrixList ps lPoints
+
+testDataPoints :: [(Float, Float)]
+testDataPoints = [(1, -1), (-1, 1), (2, 2)]
+
+testLandmarkPoints :: [(Float, Float)]
+testLandmarkPoints = [(0,0), (2,0), (0,2)]
+
+-- >>> witnessSet (distanceMatrix testDataPoints testLandmarkPoints) 0 2
+-- Right [[],[0],[0,1],[0,1,2],[0,2],[1],[1,2],[2]]
