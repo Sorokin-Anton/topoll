@@ -40,6 +40,7 @@ library
     , bed-and-breakfast
     , containers
     , finite-typelits
+    , hmatrix
     , parallel
     , qlinear
     , vector
@@ -59,6 +60,7 @@ executable topoll-exe
     , bed-and-breakfast
     , containers
     , finite-typelits
+    , hmatrix
     , parallel
     , qlinear
     , topoll
@@ -80,6 +82,7 @@ test-suite topoll-test
     , bed-and-breakfast
     , containers
     , finite-typelits
+    , hmatrix
     , parallel
     , qlinear
     , topoll
