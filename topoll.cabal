@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -27,6 +27,7 @@ library
       Topoll.ChainComplex.Field
       Topoll.ChainComplex.Integers
       Topoll.ChainComplex.Type
+      Topoll.DistanceMatrix.DistanceMatrix
       Topoll.SimplicialSet
       Topoll.Witness.Witness
   other-modules:
@@ -42,6 +43,7 @@ library
     , finite-typelits
     , parallel
     , qlinear
+    , random
     , vector
     , vector-algorithms
   default-language: Haskell2010
@@ -61,6 +63,7 @@ executable topoll-exe
     , finite-typelits
     , parallel
     , qlinear
+    , random
     , topoll
     , vector
     , vector-algorithms
@@ -82,6 +85,7 @@ test-suite topoll-test
     , finite-typelits
     , parallel
     , qlinear
+    , random
     , topoll
     , vector
     , vector-algorithms
