@@ -1,12 +1,11 @@
-module Topoll.DistanceMatrix.DistanceMatrix (AggregatedData(..), chooseMaxminLandmakrs, chooseRandomLandmarks) where
+module Topoll.DistanceMatrix.DistanceMatrix 
+    (AggregatedData(..), chooseMaxminLandmakrs, chooseRandomLandmarks, computeDistanceMatrix) where
 
 import qualified Data.Vector as V
 import Data.Vector (Vector, (!))
 import Numeric.Natural
 import System.Random
 import Data.Functor
-
-import System.IO.Unsafe (unsafePerformIO)
 
 data AggregatedData = AggregatedData {
     landmarkPoints :: Vector (Vector Float),
@@ -60,10 +59,7 @@ chooseRandomLandmarks :: Natural -> Vector (Vector Float) -> IO AggregatedData
 chooseRandomLandmarks numberOfLandmarksToChoose samplePoints = 
     chooseRandomLandmarksIter numberOfLandmarksToChoose (AggregatedData V.empty samplePoints)
 
-vecHelper :: [[Float]] -> Vector (Vector Float)
-vecHelper lst = V.fromList (fmap V.fromList lst)
-
-{-
->>> unsafePerformIO $ chooseRandomLandmarks 4 (vecHelper [[1,2], [3,4], [5, 6], [7, 8], [9, 10], [11, 12]])
-AggregatedData {landmarkPoints = [[7.0,8.0],[1.0,2.0],[11.0,12.0],[5.0,6.0]], dataPoints = [[3.0,4.0],[9.0,10.0]]}
--}
+{- Compute distance matrix from the aggregated data (landmarks and data points) -}
+computeDistanceMatrix :: AggregatedData -> Vector (Vector Float)
+computeDistanceMatrix (AggregatedData landmarks dpoints) = 
+    landmarks <&> (\x -> distToVectors x dpoints)
