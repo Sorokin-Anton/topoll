@@ -5,6 +5,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Topoll.ChainComplex.Type where
 
@@ -14,12 +15,21 @@ import GHC.TypeLits
 import QLinear (Matrix, value, (~*~))
 import Data.Ratio
 import Internal.Matrix (Matrix(..))
-
+import Control.Parallel.Strategies (parMap, NFData, rseq)
 
 
 data ChainComplex (a :: Type) (dimensions :: [Nat]) where -- chain complex of f.g. free modules over `a`, first element in dimension list is highest grade
   ZeroComplex :: ChainComplex a '[0]
-  UnsafeAddToRight :: KnownNat y => ChainComplex a (x ': xs) -> Matrix x y a -> ChainComplex a (y ': x ': xs) -- inductively adds `a^y` to right
+  UnsafeAddToRight :: (KnownNat x, KnownNat y) => ChainComplex a (x ': xs) -> Matrix x y a -> ChainComplex a (y ': x ': xs) -- inductively adds `a^y` to right
+
+foldChainComplexPar :: NFData b => (SomeMatrix a -> b) -> ChainComplex a dims -> [b]
+foldChainComplexPar f = parMap rseq   f . reverse . collectMatrixes  where
+  collectMatrixes :: ChainComplex a d -> [SomeMatrix a]
+  collectMatrixes ZeroComplex = []
+  collectMatrixes (UnsafeAddToRight cc m) = SomeMatrix m : collectMatrixes cc
+
+data SomeMatrix a where
+  SomeMatrix :: (KnownNat m, KnownNat n) => Matrix m n a -> SomeMatrix a
 
 data SomeChainComplex a where
   SomeChainComplex :: ChainComplex a dims -> SomeChainComplex a

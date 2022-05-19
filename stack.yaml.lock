@@ -22,6 +22,13 @@ packages:
       sha256: 02ef11426f3f0f313e12b26bbeb6adb2a1e83074db775606c7d1f870d8f96e28
   original:
     hackage: SmithNormalForm-0.1.0.0@sha256:c941b6cff6db301d933e1cf0cfadaa145b74939e8ad6e004348db46e71b76f72,1280
+- completed:
+    hackage: bed-and-breakfast-0.5@sha256:02b7f3f18b23f97cf70782f09bed746ecad751f331121a3a43fe97880c25fbce,1597
+    pantry-tree:
+      size: 563
+      sha256: 731aaa8e4729d534bf1409844ae5235b0963576a5def565fde4877a328bb30fb
+  original:
+    hackage: bed-and-breakfast-0.5@sha256:02b7f3f18b23f97cf70782f09bed746ecad751f331121a3a43fe97880c25fbce,1597
 snapshots:
 - completed:
     size: 590100
