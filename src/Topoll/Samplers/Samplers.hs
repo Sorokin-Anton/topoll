@@ -33,14 +33,18 @@ sampleSpherePointsUniformlyAtParametrization sphereRadius numberOfPointsToSample
     return $ preResult' <&> (\(x, y) -> 
         V.fromList [sphereRadius * cos x * sin y, sphereRadius * sin x * sin y, sphereRadius * cos y])
 
-{- First argumant is R, the distance from the center of the tube to the center of the torus. -}
+{- First argumant is bigR, the distance from the center of the tube to the center of the torus. -}
 {- The second one -- r, the radius of the tube. -}
 sampleTorusPointsUniformlyAtParametrization :: Float -> Float -> Int -> IO (Vector (Vector Float))
 sampleTorusPointsUniformlyAtParametrization ((<0) -> True) _ _= fail "Can't sample points from the torus with negative R"
 sampleTorusPointsUniformlyAtParametrization _ ((<0) -> True) _ = fail "Can't sample points from the torus with negative r"
 sampleTorusPointsUniformlyAtParametrization _ _ ((<0) -> True) = fail "The sample length can't be negative"
+sampleTorusPointsUniformlyAtParametrization bigR r numberOfPointsToSample = do
+    preRusult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, 2 * pi) numberOfPointsToSample
+    return $ preRusult' <&> (\(x, y) -> 
+        V.fromList [(bigR + r * cos x) * cos y, (bigR + r * cos x) * sin y, r * sin x])
 
 {-
->>> unsafePerformIO (sampleSpherePointsUniformlyAtParametrization 2 3)
-[[0.8816474,0.56806624,-1.7029383],[-0.14423884,-1.2169378,-1.5805879],[-1.0018421,-1.6333739,-0.5730639]]
+>>> unsafePerformIO (sampleTorusPointsUniformlyAtParametrization 3 1 3)
+[[-1.0837613,-2.9714236,0.9866436],[-0.72174066,2.1558383,0.68710744],[-1.64129,2.131897,-0.95090103]]
 -}
