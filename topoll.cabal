@@ -28,6 +28,7 @@ library
       Topoll.ChainComplex.Integers
       Topoll.ChainComplex.Type
       Topoll.DistanceMatrix.DistanceMatrix
+      Topoll.Samplers.Samplers
       Topoll.SimplicialSet
       Topoll.Witness.Witness
   other-modules:
