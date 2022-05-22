@@ -6,4 +6,4 @@ import Data.Set (delete, powerSet, fromList)
 
 main :: IO ()
 main = do
-  print $ simplicialHomologyOverQ $ simplicialSet (fromList [1..10] `delete` powerSet (fromList [1..10]))
+  print $ simplicialHomologyOverQ $ simplicialSet (fromList [1..14] `delete` powerSet (fromList [1..14]))

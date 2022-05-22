@@ -27,6 +27,7 @@ dependencies:
 - bed-and-breakfast
 - parallel
 - random
+- hmatrix
 
 library:
   source-dirs: src
