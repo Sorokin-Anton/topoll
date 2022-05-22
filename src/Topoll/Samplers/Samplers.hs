@@ -7,7 +7,6 @@ import Data.Vector (Vector)
 import System.Random
 import Data.Functor ( (<&>) )
 
-import System.IO.Unsafe
 
 nextTriple :: (Float, Float) -> (Float, Float) -> (Float, Float, StdGen) -> (Float, Float, StdGen)
 nextTriple firstRange secondRange (_, _, rnd) = (firstC, fst nextPair, snd nextPair) where
@@ -30,7 +29,7 @@ sampleSpherePointsUniformlyAtParametrization ((<0) -> True) _ = fail "Can't samp
 sampleSpherePointsUniformlyAtParametrization _ 0 = return V.empty
 sampleSpherePointsUniformlyAtParametrization sphereRadius numberOfPointsToSample = do
     preResult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, 2 * pi) numberOfPointsToSample
-    return $ preResult' <&> (\(x, y) -> 
+    return $ preResult' <&> (\(x, y) ->
         V.fromList [sphereRadius * cos x * sin y, sphereRadius * sin x * sin y, sphereRadius * cos y])
 
 {- First argumant is bigR, the distance from the center of the tube to the center of the torus. -}
@@ -41,10 +40,10 @@ sampleTorusPointsUniformlyAtParametrization _ ((<0) -> True) _ = fail "Can't sam
 sampleTorusPointsUniformlyAtParametrization _ _ ((<0) -> True) = fail "The sample length can't be negative"
 sampleTorusPointsUniformlyAtParametrization bigR r numberOfPointsToSample = do
     preRusult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, 2 * pi) numberOfPointsToSample
-    return $ preRusult' <&> (\(x, y) -> 
+    return $ preRusult' <&> (\(x, y) ->
         V.fromList [(bigR + r * cos x) * cos y, (bigR + r * cos x) * sin y, r * sin x])
 
 {-
->>> unsafePerformIO (sampleTorusPointsUniformlyAtParametrization 3 1 3)
-[[-1.0837613,-2.9714236,0.9866436],[-0.72174066,2.1558383,0.68710744],[-1.64129,2.131897,-0.95090103]]
+>>> sampleTorusPointsUniformlyAtParametrization 3 1 3
+[[-0.8049935,-2.4501386,-0.90705645],[-3.2948124,2.2119405e-2,-0.95553225],[-1.6657829,1.5838518,-0.7127373]]
 -}

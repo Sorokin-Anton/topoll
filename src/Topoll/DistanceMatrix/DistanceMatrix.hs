@@ -1,5 +1,5 @@
-module Topoll.DistanceMatrix.DistanceMatrix 
-    (AggregatedData(..), chooseMaxminLandmakrs, chooseRandomLandmarks, computeDistanceMatrix) where
+module Topoll.DistanceMatrix.DistanceMatrix
+    (AggregatedData(..), chooseMaxminLandmarks, chooseRandomLandmarks, computeDistanceMatrix) where
 
 import qualified Data.Vector as V
 import Data.Vector (Vector, (!))
@@ -38,8 +38,8 @@ chooseMaxminLandmarksIter n dta = do
     return (AggregatedData (landmrks <> V.singleton newLandmark) (initDpoints <> tailDpoints))
 
 {- Choose landmark points for the sample using maxmin algorithm -}
-chooseMaxminLandmakrs :: Natural -> Vector (Vector Float) -> IO AggregatedData
-chooseMaxminLandmakrs numberOfLandmarksToChoose samplePoints = 
+chooseMaxminLandmarks :: Natural -> Vector (Vector Float) -> IO AggregatedData
+chooseMaxminLandmarks numberOfLandmarksToChoose samplePoints =
     chooseMaxminLandmarksIter numberOfLandmarksToChoose (AggregatedData V.empty samplePoints)
 
 chooseRandomLandmarksIter :: Natural -> AggregatedData -> IO AggregatedData
@@ -56,10 +56,10 @@ chooseRandomLandmarksIter n dta = do
 
 {- Choose landmark points from the sample uniformly at random -}
 chooseRandomLandmarks :: Natural -> Vector (Vector Float) -> IO AggregatedData
-chooseRandomLandmarks numberOfLandmarksToChoose samplePoints = 
+chooseRandomLandmarks numberOfLandmarksToChoose samplePoints =
     chooseRandomLandmarksIter numberOfLandmarksToChoose (AggregatedData V.empty samplePoints)
 
 {- Compute distance matrix from the aggregated data (landmarks and data points) -}
 computeDistanceMatrix :: AggregatedData -> Vector (Vector Float)
-computeDistanceMatrix (AggregatedData landmarks dpoints) = 
+computeDistanceMatrix (AggregatedData landmarks dpoints) =
     landmarks <&> (\x -> distToVectors x dpoints)
