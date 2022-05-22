@@ -26,6 +26,7 @@ dependencies:
 - containers
 - bed-and-breakfast
 - parallel
+- random
 - hmatrix
 
 library:
