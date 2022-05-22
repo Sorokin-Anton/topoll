@@ -62,4 +62,4 @@ chooseRandomLandmarks numberOfLandmarksToChoose samplePoints =
 {- Compute distance matrix from the aggregated data (landmarks and data points) -}
 computeDistanceMatrix :: AggregatedData -> Vector (Vector Float)
 computeDistanceMatrix (AggregatedData landmarks dpoints) =
-    landmarks <&> (\x -> distToVectors x dpoints)
+    dpoints <&> (\x -> distToVectors x landmarks)
