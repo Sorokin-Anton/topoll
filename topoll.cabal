@@ -30,7 +30,7 @@ library
       Topoll.DistanceMatrix.DistanceMatrix
       Topoll.Samplers.Samplers
       Topoll.SimplicialSet
-      Topoll.Witness.Witness
+      Topoll.Complexes.Witness
   other-modules:
       Paths_topoll
   hs-source-dirs:

@@ -1,4 +1,4 @@
-module Topoll.Witness.Witness where
+module Topoll.Complexes.Witness where
 
 import qualified Data.Vector as V
 import Data.Vector ( (!?), modify, Vector, enumFromN )
