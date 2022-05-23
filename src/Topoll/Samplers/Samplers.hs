@@ -1,6 +1,9 @@
 {-# LANGUAGE ViewPatterns #-}
 
-module Topoll.Samplers.Samplers(sampleSpherePointsUniformlyAtParametrization, sampleTorusPointsUniformlyAtParametrization) where
+module Topoll.Samplers.Samplers
+    (sampleSpherePointsUniformlyAtParametrization, 
+     sampleTorusPointsUniformlyAtParametrization,
+     sampleSphereUniformly) where
 
 import qualified Data.Vector as V
 import Data.Vector (Vector)
@@ -28,7 +31,7 @@ sampleSpherePointsUniformlyAtParametrization _ ((<0) -> True) = fail "The sample
 sampleSpherePointsUniformlyAtParametrization ((<0) -> True) _ = fail "Can't sample points from the sphere of the negative radius"
 sampleSpherePointsUniformlyAtParametrization _ 0 = return V.empty
 sampleSpherePointsUniformlyAtParametrization sphereRadius numberOfPointsToSample = do
-    preResult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, 2 * pi) numberOfPointsToSample
+    preResult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, pi) numberOfPointsToSample
     return $ preResult' <&> (\(x, y) ->
         V.fromList [sphereRadius * cos x * sin y, sphereRadius * sin x * sin y, sphereRadius * cos y])
 
@@ -43,7 +46,16 @@ sampleTorusPointsUniformlyAtParametrization bigR r numberOfPointsToSample = do
     return $ preRusult' <&> (\(x, y) ->
         V.fromList [(bigR + r * cos x) * cos y, (bigR + r * cos x) * sin y, r * sin x])
 
+sampleSphereUniformly :: Float -> Int -> IO (Vector (Vector Float))
+sampleSphereUniformly ((<0) -> True) _= fail "Can't sample points from the sphere of the negative radius"
+sampleSphereUniformly _ ((<0) -> True) = fail "The sample length can't be negative"
+sampleSphereUniformly sphereRadius numberOfPointsToSample = do
+    randomPoints <- getUniformPointsOfRectangle (0, 1) (0, 1) numberOfPointsToSample
+    let tweakedPoints = randomPoints <&> (\(x, y) -> (2*pi*x, acos (1 - 2*y)))
+    return $ tweakedPoints <&> (\(x, y) ->
+        V.fromList [sphereRadius * cos x * sin y, sphereRadius * sin x * sin y, sphereRadius * cos y])
+
 {-
->>> sampleTorusPointsUniformlyAtParametrization 3 1 3
-[[-0.8049935,-2.4501386,-0.90705645],[-3.2948124,2.2119405e-2,-0.95553225],[-1.6657829,1.5838518,-0.7127373]]
+>>> sampleSphereUniformly 3 3
+[[1.0275645,2.4603398,1.375078],[0.5589352,-2.9438257,0.14656463],[-1.6611104,-1.6723514,-1.855789]]
 -}
