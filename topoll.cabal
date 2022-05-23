@@ -27,10 +27,11 @@ library
       Topoll.ChainComplex.Field
       Topoll.ChainComplex.Integers
       Topoll.ChainComplex.Type
+      Topoll.Complexes.Rips
+      Topoll.Complexes.Witness
       Topoll.DistanceMatrix.DistanceMatrix
       Topoll.Samplers.Samplers
       Topoll.SimplicialSet
-      Topoll.Complexes.Witness
   other-modules:
       Paths_topoll
   hs-source-dirs:

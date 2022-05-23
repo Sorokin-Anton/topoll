@@ -1,5 +1,5 @@
 module Topoll.DistanceMatrix.DistanceMatrix
-    (AggregatedData(..), chooseMaxminLandmarks, chooseRandomLandmarks, computeDistanceMatrix) where
+    (AggregatedData(..), chooseMaxminLandmarks, chooseRandomLandmarks, computeDistanceMatrix, computeTotalDistanceMatrix) where
 
 import qualified Data.Vector as V
 import Data.Vector (Vector, (!))
@@ -63,3 +63,7 @@ chooseRandomLandmarks numberOfLandmarksToChoose samplePoints =
 computeDistanceMatrix :: AggregatedData -> Vector (Vector Float)
 computeDistanceMatrix (AggregatedData landmarks dpoints) =
     dpoints <&> (\x -> distToVectors x landmarks)
+
+{- Compute distances between all points -}
+computeTotalDistanceMatrix :: Vector (Vector Float) -> Vector (Vector Float)
+computeTotalDistanceMatrix points = computeDistanceMatrix (AggregatedData points points)
