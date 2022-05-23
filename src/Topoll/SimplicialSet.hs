@@ -1,8 +1,5 @@
 {-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE DataKinds #-}
 module Topoll.SimplicialSet where
 
 import Control.Monad
@@ -21,7 +18,7 @@ import qualified Data.Map as M
 
 type Simplex  = S.Set Int
 
-newtype SimplicialSet = UnsafeSimplicialSet (S.Set Simplex)
+newtype SimplicialSet = UnsafeSimplicialSet (S.Set Simplex) deriving Eq
 instance Show SimplicialSet where  show (UnsafeSimplicialSet a) = show $ map S.toAscList (S.toAscList a)
 
 simplicialSet :: S.Set Simplex -> SimplicialSet

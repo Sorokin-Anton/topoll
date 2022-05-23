@@ -1,11 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE TypeApplications #-}
 module Topoll.ChainComplex.Field where
 
 import QLinear ( Matrix, value )
 import Topoll.ChainComplex.Type
+    ( SomeMatrix(SomeMatrix), ChainComplex, foldChainComplexPar )
 import GHC.TypeLits (natVal)
 import Data.Proxy
 import qualified Numeric.Matrix as NM

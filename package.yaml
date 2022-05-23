@@ -28,6 +28,16 @@ dependencies:
 - parallel
 - random
 - hmatrix
+- named
+
+default-extensions:
+- DataKinds
+- ViewPatterns
+- TypeOperators
+- OverloadedLabels
+- TypeApplications
+- GADTs
+- KindSignatures
 
 library:
   source-dirs: src
@@ -53,3 +63,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - topoll
+    - hspec

@@ -1,15 +1,14 @@
-{-# LANGUAGE ViewPatterns #-}
-
 module Topoll.Samplers.Samplers
-    (sampleSpherePointsUniformlyAtParametrization, 
-     sampleTorusPointsUniformlyAtParametrization,
+    (sampleSphereUniformlyAtParametrization,
+     sampleTorusUniformlyAtParametrization,
      sampleSphereUniformly) where
 
 import qualified Data.Vector as V
 import Data.Vector (Vector)
 import System.Random
 import Data.Functor ( (<&>) )
-
+import Topoll.DistanceMatrix.DistanceMatrix (Point)
+import Named
 
 nextTriple :: (Float, Float) -> (Float, Float) -> (Float, Float, StdGen) -> (Float, Float, StdGen)
 nextTriple firstRange secondRange (_, _, rnd) = (firstC, fst nextPair, snd nextPair) where
@@ -26,30 +25,33 @@ getUniformPointsOfRectangle firstRange secondRange numberOfPointsToSample = do
     let preResult = V.iterateN numberOfPointsToSample (nextTriple firstRange secondRange) firstTriple
     return $ preResult <&> (\(ft, nd, _) -> (ft, nd))
 
-sampleSpherePointsUniformlyAtParametrization :: Float -> Int -> IO (Vector (Vector Float))
-sampleSpherePointsUniformlyAtParametrization _ ((<0) -> True) = fail "The sample length can't be negative"
-sampleSpherePointsUniformlyAtParametrization ((<0) -> True) _ = fail "Can't sample points from the sphere of the negative radius"
-sampleSpherePointsUniformlyAtParametrization _ 0 = return V.empty
-sampleSpherePointsUniformlyAtParametrization sphereRadius numberOfPointsToSample = do
-    preResult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, pi) numberOfPointsToSample
-    return $ preResult' <&> (\(x, y) ->
-        V.fromList [sphereRadius * cos x * sin y, sphereRadius * sin x * sin y, sphereRadius * cos y])
+sampleSphereUniformlyAtParametrization :: "r" :! Float -> "n" :! Int -> IO (Vector Point)
+sampleSphereUniformlyAtParametrization (Arg sphereRadius) (Arg numberOfPointsToSample)
+  | numberOfPointsToSample < 0 = fail "The sample length can't be negative"
+  | sphereRadius < 0 = fail "Can't sample points from the sphere of the negative radius"
+  | numberOfPointsToSample == 0 = return V.empty
+  | otherwise = do
+      preResult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, pi) numberOfPointsToSample
+      return $ preResult' <&> (\(x, y) ->
+          V.fromList [sphereRadius * cos x * sin y, sphereRadius * sin x * sin y, sphereRadius * cos y])
 
 {- First argumant is bigR, the distance from the center of the tube to the center of the torus. -}
 {- The second one -- r, the radius of the tube. -}
-sampleTorusPointsUniformlyAtParametrization :: Float -> Float -> Int -> IO (Vector (Vector Float))
-sampleTorusPointsUniformlyAtParametrization ((<0) -> True) _ _= fail "Can't sample points from the torus with negative R"
-sampleTorusPointsUniformlyAtParametrization _ ((<0) -> True) _ = fail "Can't sample points from the torus with negative r"
-sampleTorusPointsUniformlyAtParametrization _ _ ((<0) -> True) = fail "The sample length can't be negative"
-sampleTorusPointsUniformlyAtParametrization bigR r numberOfPointsToSample = do
-    preRusult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, 2 * pi) numberOfPointsToSample
-    return $ preRusult' <&> (\(x, y) ->
-        V.fromList [(bigR + r * cos x) * cos y, (bigR + r * cos x) * sin y, r * sin x])
+sampleTorusUniformlyAtParametrization :: "R" :! Float -> "r" :! Float -> "n" :! Int -> IO (Vector Point)
+sampleTorusUniformlyAtParametrization (Arg bigR) (Arg r) (Arg numberOfPointsToSample)
+    | bigR < 0 = fail "Can't sample points from the torus with negative R"
+    | r < 0 = fail "Can't sample points from the torus with negative r"
+    | numberOfPointsToSample < 0 = fail "The sample length can't be negative"
+    | otherwise = do
+        preRusult' <- getUniformPointsOfRectangle (0 :: Float, 2 * pi) (0 :: Float, 2 * pi) numberOfPointsToSample
+        return $ preRusult' <&> (\(x, y) ->
+            V.fromList [(bigR + r * cos x) * cos y, (bigR + r * cos x) * sin y, r * sin x])
 
-sampleSphereUniformly :: Float -> Int -> IO (Vector (Vector Float))
-sampleSphereUniformly ((<0) -> True) _= fail "Can't sample points from the sphere of the negative radius"
-sampleSphereUniformly _ ((<0) -> True) = fail "The sample length can't be negative"
-sampleSphereUniformly sphereRadius numberOfPointsToSample = do
+sampleSphereUniformly :: "r" :! Float -> "n" :! Int -> IO (Vector Point)
+sampleSphereUniformly (Arg sphereRadius) (Arg numberOfPointsToSample)
+  | sphereRadius < 0 = fail "Can't sample points from the sphere of the negative radius"
+  | numberOfPointsToSample < 0  = fail "The sample length can't be negative"
+  | otherwise = do
     randomPoints <- getUniformPointsOfRectangle (0, 1) (0, 1) numberOfPointsToSample
     let tweakedPoints = randomPoints <&> (\(x, y) -> (2*pi*x, acos (1 - 2*y)))
     return $ tweakedPoints <&> (\(x, y) ->
@@ -57,5 +59,5 @@ sampleSphereUniformly sphereRadius numberOfPointsToSample = do
 
 {-
 >>> sampleSphereUniformly 3 3
-[[1.0275645,2.4603398,1.375078],[0.5589352,-2.9438257,0.14656463],[-1.6611104,-1.6723514,-1.855789]]
+[[1.9207355,1.4409856,1.7984262],[-0.1334068,-1.567291,-2.554565],[-2.0708957,-1.768318,1.2587464]]
 -}

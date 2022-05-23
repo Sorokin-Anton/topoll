@@ -7,6 +7,8 @@ import Data.Set ( insert, union, Set )
 import qualified Data.Vector.Algorithms.Merge as VA
 
 import Topoll.SimplicialSet
+import Topoll.DistanceMatrix.DistanceMatrix
+import Named
 
 ithSmallest :: Vector Float -> Int -> Maybe Float
 ithSmallest vec i = vecSorted !? (i-1) where
@@ -28,27 +30,29 @@ pairs (a : as) = pairs as `union` pairsWith a as where
   pairsWith _ [] = S.empty
   pairsWith b (c : cs) = insert (b, c) (pairsWith c cs)
 
-witnessEdges :: Vector (Vector Float) -> Float -> Int -> Int -> Either String (Set (Int, Int))
-witnessEdges dd r nu i = do
-  witnessDist <- case dd !? i of
-    Nothing -> Left $ "invalid index of a witness " ++ show i
-    Just v -> Right v
-  m <- case mi witnessDist nu of
-    Nothing -> Left "incorrect arguments to mi"
-    Just mm -> Right mm
-  let landmarksEnumerated = V.zip witnessDist $ enumFromN (0 :: Int) $ length witnessDist
-  let closeLandmarks = V.filter ((<= m + r) . fst) landmarksEnumerated
-  return . pairs . V.toList . V.map snd $ closeLandmarks
 
-edges :: Vector (Vector Float) -> Float -> Int -> Either String (Set (Int, Int))
-edges dd r nu = edges' $ take (V.length dd) $ enumFrom (0 :: Int) where
+edges :: DistanceMatrix -> ("r" :! Float) -> ("nu" :! Int) -> Either String (Set (Int, Int))
+edges dd (Arg r) (Arg nu) = edges' $ take (V.length dd) $ enumFrom (0 :: Int) where
   edges' [] = return S.empty
   edges' (i : is) = do
-    wEdges <- witnessEdges dd r nu i
+    wEdges <- witnessEdges i
     restEdges <- edges' is
     return $ wEdges `union` restEdges
 
-witnessSet :: Vector (Vector Float) -> Float -> Int -> Either String SimplicialSet
+  witnessEdges :: Int -> Either String (Set (Int, Int))
+  witnessEdges i = do
+    witnessDist <- case dd !? i of
+      Nothing -> Left $ "invalid index of a witness " ++ show i
+      Just v -> Right v
+    m <- case mi witnessDist nu of
+      Nothing -> Left "incorrect arguments to mi"
+      Just mm -> Right mm
+    let landmarksEnumerated = V.zip witnessDist $ enumFromN (0 :: Int) $ length witnessDist
+    let closeLandmarks = V.filter ((<= m + r) . fst) landmarksEnumerated
+    return . pairs . V.toList . V.map snd $ closeLandmarks
+
+
+witnessSet :: DistanceMatrix -> ("r" :! Float) -> ("nu" :! Int) -> Either String SimplicialSet
 witnessSet dd r nu = do
   edg <- edges dd r nu
   let allEdges = S.map (\(a, b) -> S.fromList [a, b]) edg
@@ -57,22 +61,3 @@ witnessSet dd r nu = do
         Just v -> S.fromList . map S.singleton . take (V.length v) $ [0, 1 ..]
   let complex0 = simplicialSet $ S.union allEdges allVertices
   return $ flag complex0
-
--- TEST
-
-distance :: (Float, Float) -> (Float, Float) -> Float
-distance (a, b) (c, d) = sqrt $ (a - c) * (a - c) + (b - d) * (b - d)
-
-distanceMatrix :: [(Float, Float)] -> [(Float, Float)] -> Vector (Vector Float)
-distanceMatrix dataPoints landmarkPoints = V.fromList . map V.fromList $ distanceMatrixList dataPoints landmarkPoints where
-  distanceMatrixList [] _ = []
-  distanceMatrixList (p : ps) lPoints = map (distance p) lPoints : distanceMatrixList ps lPoints
-
-testDataPoints :: [(Float, Float)]
-testDataPoints = [(1, -1), (-1, 1), (2, 2)]
-
-testLandmarkPoints :: [(Float, Float)]
-testLandmarkPoints = [(0,0), (2,0), (0,2)]
-
--- >>> witnessSet (distanceMatrix testDataPoints testLandmarkPoints) 0 2
--- Right [[],[0],[0,1],[0,1,2],[0,2],[1],[1,2],[2]]

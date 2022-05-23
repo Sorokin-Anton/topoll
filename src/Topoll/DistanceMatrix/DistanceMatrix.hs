@@ -1,5 +1,5 @@
 module Topoll.DistanceMatrix.DistanceMatrix
-    (AggregatedData(..), chooseMaxminLandmarks, chooseRandomLandmarks, computeDistanceMatrix, computeTotalDistanceMatrix) where
+    (Point, DistanceMatrix, AggregatedData(..), chooseMaxminLandmarks, chooseRandomLandmarks, computeDistanceMatrix, computeTotalDistanceMatrix) where
 
 import qualified Data.Vector as V
 import Data.Vector (Vector, (!))
@@ -7,16 +7,20 @@ import Numeric.Natural
 import System.Random
 import Data.Functor
 
+type Point = Vector Float
+type DistanceMatrix = Vector (Vector Float)
+
+
 data AggregatedData = AggregatedData {
-    landmarkPoints :: Vector (Vector Float),
-    dataPoints :: Vector (Vector Float)
+    landmarkPoints :: Vector Point,
+    dataPoints :: Vector Point
 } deriving (Eq, Show)
 
 euclideanMetric :: Vector Float -> Vector Float -> Float
-euclideanMetric v1 v2 = sqrt $ V.sum ((V.zip v1 v2) <&> (\(x, y) -> (x - y)*(x - y)))
+euclideanMetric v1 v2 = sqrt $ V.sum (V.zip v1 v2 <&> (\(x, y) -> (x - y)*(x - y)))
 
 distToVectors :: Vector Float -> Vector (Vector Float) -> Vector Float
-distToVectors vec points = points <&> (\v -> euclideanMetric v vec)
+distToVectors vec points = euclideanMetric vec <$> points
 
 chooseMaxminLandmarksIter :: Natural -> AggregatedData -> IO AggregatedData
 chooseMaxminLandmarksIter 0 points = return points
@@ -38,7 +42,7 @@ chooseMaxminLandmarksIter n dta = do
     return (AggregatedData (landmrks <> V.singleton newLandmark) (initDpoints <> tailDpoints))
 
 {- Choose landmark points for the sample using maxmin algorithm -}
-chooseMaxminLandmarks :: Natural -> Vector (Vector Float) -> IO AggregatedData
+chooseMaxminLandmarks :: Natural -> Vector Point -> IO AggregatedData
 chooseMaxminLandmarks numberOfLandmarksToChoose samplePoints =
     chooseMaxminLandmarksIter numberOfLandmarksToChoose (AggregatedData V.empty samplePoints)
 
@@ -55,15 +59,15 @@ chooseRandomLandmarksIter n dta = do
     return (AggregatedData (landmrks <> V.singleton newLandmark) (initDpoints <> tailDpoints))
 
 {- Choose landmark points from the sample uniformly at random -}
-chooseRandomLandmarks :: Natural -> Vector (Vector Float) -> IO AggregatedData
+chooseRandomLandmarks :: Natural -> Vector Point -> IO AggregatedData
 chooseRandomLandmarks numberOfLandmarksToChoose samplePoints =
     chooseRandomLandmarksIter numberOfLandmarksToChoose (AggregatedData V.empty samplePoints)
 
 {- Compute distance matrix from the aggregated data (landmarks and data points) -}
-computeDistanceMatrix :: AggregatedData -> Vector (Vector Float)
+computeDistanceMatrix :: AggregatedData -> DistanceMatrix
 computeDistanceMatrix (AggregatedData landmarks dpoints) =
-    dpoints <&> (\x -> distToVectors x landmarks)
+    (`distToVectors` landmarks) <$> dpoints
 
 {- Compute distances between all points -}
-computeTotalDistanceMatrix :: Vector (Vector Float) -> Vector (Vector Float)
+computeTotalDistanceMatrix :: Vector Point -> DistanceMatrix
 computeTotalDistanceMatrix points = computeDistanceMatrix (AggregatedData points points)

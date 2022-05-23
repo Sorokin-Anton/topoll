@@ -29,6 +29,13 @@ packages:
       sha256: 731aaa8e4729d534bf1409844ae5235b0963576a5def565fde4877a328bb30fb
   original:
     hackage: bed-and-breakfast-0.5@sha256:02b7f3f18b23f97cf70782f09bed746ecad751f331121a3a43fe97880c25fbce,1597
+- completed:
+    hackage: named-0.3.0.1@sha256:16c23f330b9f0373c464fee44d48dfa0f9d561f35bfe73dfd6ea69459688d4e5,2325
+    pantry-tree:
+      size: 426
+      sha256: c58b1c3313b67f124b1b3f6234ad90f1da97d8c9fdd6ad061f63b0fb38097209
+  original:
+    hackage: named-0.3.0.1@sha256:16c23f330b9f0373c464fee44d48dfa0f9d561f35bfe73dfd6ea69459688d4e5,2325
 snapshots:
 - completed:
     size: 590100
