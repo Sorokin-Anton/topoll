@@ -38,7 +38,7 @@ sampleSphereUniformlyAtParametrization (Arg sphereRadius) (Arg numberOfPointsToS
 
 {- First argumant is bigR, the distance from the center of the tube to the center of the torus. -}
 {- The second one -- r, the radius of the tube. -}
-sampleTorusUniformlyAtParametrization :: "R" :! Float -> "r" :! Float -> "n" :! Int -> IO (Vector Point)
+sampleTorusUniformlyAtParametrization :: "bigR" :! Float -> "r" :! Float -> "n" :! Int -> IO (Vector Point)
 sampleTorusUniformlyAtParametrization (Arg bigR) (Arg r) (Arg numberOfPointsToSample)
     | bigR < 0 = fail "Can't sample points from the torus with negative R"
     | r < 0 = fail "Can't sample points from the torus with negative r"
@@ -60,7 +60,7 @@ sampleSphereUniformly (Arg sphereRadius) (Arg numberOfPointsToSample)
 
 {- First argumant is bigR, the distance from the center of the tube to the center of the torus. -}
 {- The second one -- r, the radius of the tube. -}
-sampleTorusUniformly :: "R" :! Float -> "r" :! Float -> "n" :! Int -> IO (Vector Point)
+sampleTorusUniformly :: "bigR" :! Float -> "r" :! Float -> "n" :! Int -> IO (Vector Point)
 sampleTorusUniformly (Arg bigR) (Arg r) (Arg numberOfPointsToSample)
     | bigR < 0 = fail "Can't sample points from the torus with negative R"
     | r < 0 = fail "Can't sample points from the torus with negative r"
