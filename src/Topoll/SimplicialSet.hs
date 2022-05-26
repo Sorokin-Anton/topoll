@@ -112,7 +112,7 @@ simplicialComplex sc = addZeroToRight $  buildChainComplex $ reverse (tail $ spl
     addZeroToRight (SomeChainComplex cc@(UnsafeAddToRight _ _)) = SomeChainComplex $ UnsafeAddToRight cc (zeroMatrix @_ @0)
     addZeroToRight (SomeChainComplex ZeroComplex) = SomeChainComplex . fromJust $ startComplex @0 @a
 
-simplicialHomologyOverQ :: SimplicialSet -> [Integer]
+simplicialHomologyOverQ :: SimplicialSet -> [BettiNumber]
 simplicialHomologyOverQ sc = case simplicialComplex sc of
   SomeChainComplex cc -> bettiNumbers cc
 -- >>> simplicialHomologyOverQ simplicial2dSphere

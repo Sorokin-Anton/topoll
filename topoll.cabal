@@ -30,6 +30,7 @@ library
       Topoll.Complexes.Rips
       Topoll.Complexes.Witness
       Topoll.DistanceMatrix.DistanceMatrix
+      Topoll.Drawings
       Topoll.Samplers.Samplers
       Topoll.SimplicialSet
   other-modules:
@@ -52,10 +53,13 @@ library
     , containers
     , finite-typelits
     , hmatrix
+    , hvega
+    , ihaskell-hvega
     , named
     , parallel
     , qlinear
     , random
+    , text
     , vector
     , vector-algorithms
   default-language: Haskell2010
@@ -82,10 +86,13 @@ executable topoll-exe
     , containers
     , finite-typelits
     , hmatrix
+    , hvega
+    , ihaskell-hvega
     , named
     , parallel
     , qlinear
     , random
+    , text
     , topoll
     , vector
     , vector-algorithms
@@ -117,10 +124,13 @@ test-suite topoll-test
     , finite-typelits
     , hmatrix
     , hspec
+    , hvega
+    , ihaskell-hvega
     , named
     , parallel
     , qlinear
     , random
+    , text
     , topoll
     , vector
     , vector-algorithms

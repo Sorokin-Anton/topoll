@@ -36,6 +36,32 @@ packages:
       sha256: c58b1c3313b67f124b1b3f6234ad90f1da97d8c9fdd6ad061f63b0fb38097209
   original:
     hackage: named-0.3.0.1@sha256:16c23f330b9f0373c464fee44d48dfa0f9d561f35bfe73dfd6ea69459688d4e5,2325
+- completed:
+    subdir: hvega
+    name: hvega
+    version: 0.12.0.2
+    git: https://github.com/DougBurke/hvega
+    pantry-tree:
+      size: 58832
+      sha256: cc5b86f2ec293287614ab7d7468b37b0bb54c871689c7f38efbeb8ed76d43e9e
+    commit: 9ecd143b9352efd884d727231eaab6a98914886c
+  original:
+    subdir: hvega
+    git: https://github.com/DougBurke/hvega
+    commit: 9ecd143b9352efd884d727231eaab6a98914886c
+- completed:
+    subdir: ihaskell-hvega
+    name: ihaskell-hvega
+    version: 0.5.0.2
+    git: https://github.com/DougBurke/hvega
+    pantry-tree:
+      size: 586
+      sha256: 4c6a70c17b6413fd9eea2e9c16560e1dc3059ec13df144fbeecbd5475a9b3901
+    commit: 9ecd143b9352efd884d727231eaab6a98914886c
+  original:
+    subdir: ihaskell-hvega
+    git: https://github.com/DougBurke/hvega
+    commit: 9ecd143b9352efd884d727231eaab6a98914886c
 snapshots:
 - completed:
     size: 590100

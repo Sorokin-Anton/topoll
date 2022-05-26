@@ -40,7 +40,9 @@ matrixRankOverFieldNaive = f . value where
                 $ a ++ b
 
 
-bettiNumbers :: ChainComplex Integer dimensions -> [Integer]
+
+type BettiNumber = Integer
+bettiNumbers :: ChainComplex Integer dimensions -> [BettiNumber]
 bettiNumbers cc = zipWith (-) kerDims (tail imDims) where
   imDims =  foldChainComplexPar (\(SomeMatrix m) -> matrixRankOverFieldH m) cc
   kerDims = zipWith (-)

@@ -7,3 +7,9 @@ extra-deps:
 - SmithNormalForm-0.1.0.0@sha256:c941b6cff6db301d933e1cf0cfadaa145b74939e8ad6e004348db46e71b76f72,1280
 - bed-and-breakfast-0.5@sha256:02b7f3f18b23f97cf70782f09bed746ecad751f331121a3a43fe97880c25fbce,1597
 - named-0.3.0.1@sha256:16c23f330b9f0373c464fee44d48dfa0f9d561f35bfe73dfd6ea69459688d4e5,2325
+
+- git: https://github.com/DougBurke/hvega
+  commit: 9ecd143b9352efd884d727231eaab6a98914886c
+  subdirs:
+  - hvega
+  - ihaskell-hvega

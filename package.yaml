@@ -29,6 +29,9 @@ dependencies:
 - random
 - hmatrix
 - named
+- hvega
+- ihaskell-hvega
+- text
 
 default-extensions:
 - DataKinds
