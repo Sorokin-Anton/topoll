@@ -1,7 +1,8 @@
 module Topoll.Samplers.Samplers
     (sampleSphereUniformlyAtParametrization,
      sampleTorusUniformlyAtParametrization,
-     sampleSphereUniformly) where
+     sampleSphereUniformly,
+     sampleTorusUniformly) where
 
 import qualified Data.Vector as V
 import Data.Vector (Vector)
@@ -57,7 +58,23 @@ sampleSphereUniformly (Arg sphereRadius) (Arg numberOfPointsToSample)
     return $ tweakedPoints <&> (\(x, y) ->
         V.fromList [sphereRadius * cos x * sin y, sphereRadius * sin x * sin y, sphereRadius * cos y])
 
-{-
->>> sampleSphereUniformly 3 3
-[[1.9207355,1.4409856,1.7984262],[-0.1334068,-1.567291,-2.554565],[-2.0708957,-1.768318,1.2587464]]
--}
+{- First argumant is bigR, the distance from the center of the tube to the center of the torus. -}
+{- The second one -- r, the radius of the tube. -}
+sampleTorusUniformly :: "R" :! Float -> "r" :! Float -> "n" :! Int -> IO (Vector Point)
+sampleTorusUniformly (Arg bigR) (Arg r) (Arg numberOfPointsToSample)
+    | bigR < 0 = fail "Can't sample points from the torus with negative R"
+    | r < 0 = fail "Can't sample points from the torus with negative r"
+    | numberOfPointsToSample < 0 = fail "The sample length can't be negative"
+    | numberOfPointsToSample == 0 = return V.empty
+    | otherwise = do
+        rndGen <- newStdGen
+        let (firstRnd, rndGen') = uniformR (0 :: Float, 1) rndGen
+        let (secondRnd, rndGen'') = uniformR (0 :: Float, 1) rndGen'
+        let (thirdRnd, _) = uniformR (0 :: Float, 1) rndGen''
+        let x = 2*pi*firstRnd
+        let y = 2*pi*secondRnd
+        let threshold = (bigR + r * cos x)/(bigR + r)
+        if thirdRnd > threshold then sampleTorusUniformly (Arg bigR) (Arg r) (Arg numberOfPointsToSample) else do
+            let pnt = V.fromList [(bigR + r * cos x) * cos y, (bigR + r * cos x) * sin y, r * sin x]
+            rst <- sampleTorusUniformly (Arg bigR) (Arg r) (Arg (numberOfPointsToSample - 1))
+            return $ V.singleton  pnt <> rst
