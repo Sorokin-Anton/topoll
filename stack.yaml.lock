@@ -5,67 +5,74 @@
 
 packages:
 - completed:
+    commit: 23c6feea0a8d9fe5a01ab4f2cd731db8ceb5a73f
+    git: https://github.com/Sorokin-Anton/QLinear
     name: qlinear
-    version: 0.1.2.0
-    git: https://github.com/Sorokin-Anton/QLinear
     pantry-tree:
+      sha256: ad36ab45f4da4039b516622630ee2876d5911e2c6bbec004aa124c81b27324eb
       size: 1800
-      sha256: 5e6187d147b85b0c3bfe6f8fbd8a7ac503a1e67b0ebd54ce8e7fcf065d45c151
-    commit: f2e638e6c5a9fe53c78f1194ce123f01899b6558
+    version: 0.1.2.0
   original:
+    commit: 23c6feea0a8d9fe5a01ab4f2cd731db8ceb5a73f
     git: https://github.com/Sorokin-Anton/QLinear
-    commit: f2e638e6c5a9fe53c78f1194ce123f01899b6558
 - completed:
     hackage: SmithNormalForm-0.1.0.0@sha256:c941b6cff6db301d933e1cf0cfadaa145b74939e8ad6e004348db46e71b76f72,1280
     pantry-tree:
-      size: 372
       sha256: 02ef11426f3f0f313e12b26bbeb6adb2a1e83074db775606c7d1f870d8f96e28
+      size: 372
   original:
     hackage: SmithNormalForm-0.1.0.0@sha256:c941b6cff6db301d933e1cf0cfadaa145b74939e8ad6e004348db46e71b76f72,1280
 - completed:
     hackage: bed-and-breakfast-0.5@sha256:02b7f3f18b23f97cf70782f09bed746ecad751f331121a3a43fe97880c25fbce,1597
     pantry-tree:
-      size: 563
       sha256: 731aaa8e4729d534bf1409844ae5235b0963576a5def565fde4877a328bb30fb
+      size: 563
   original:
     hackage: bed-and-breakfast-0.5@sha256:02b7f3f18b23f97cf70782f09bed746ecad751f331121a3a43fe97880c25fbce,1597
 - completed:
-    hackage: named-0.3.0.1@sha256:16c23f330b9f0373c464fee44d48dfa0f9d561f35bfe73dfd6ea69459688d4e5,2325
+    hackage: ihaskell-0.10.4.0@sha256:9dba189aa8ba97d422cb7c4d8ac26dca7c2619d48e56b276dfef78effe021cc3,6602
     pantry-tree:
-      size: 426
-      sha256: c58b1c3313b67f124b1b3f6234ad90f1da97d8c9fdd6ad061f63b0fb38097209
+      sha256: 4fe813016e0343878c1354d0416cf9fe6a3400a04013c93c7aabbb28df9f5fd5
+      size: 2863
   original:
-    hackage: named-0.3.0.1@sha256:16c23f330b9f0373c464fee44d48dfa0f9d561f35bfe73dfd6ea69459688d4e5,2325
+    hackage: ihaskell-0.10.4.0@sha256:9dba189aa8ba97d422cb7c4d8ac26dca7c2619d48e56b276dfef78effe021cc3,6602
 - completed:
-    subdir: hvega
+    hackage: ghc-parser-0.2.5.0@sha256:62ebb3cb459e00752f926dd126ac4169a380d02849cfe5ffe344170329c17369,1496
+    pantry-tree:
+      sha256: 8ee6c8de7c47ad652082d3d08b407e04fc8837a8dd649c14a9f9e054687eb981
+      size: 820
+  original:
+    hackage: ghc-parser-0.2.5.0@sha256:62ebb3cb459e00752f926dd126ac4169a380d02849cfe5ffe344170329c17369,1496
+- completed:
+    commit: 543db34bc154fe52c2843e58589846eb80192f44
+    git: https://github.com/DougBurke/hvega
     name: hvega
-    version: 0.12.0.2
-    git: https://github.com/DougBurke/hvega
     pantry-tree:
-      size: 58832
-      sha256: cc5b86f2ec293287614ab7d7468b37b0bb54c871689c7f38efbeb8ed76d43e9e
-    commit: 9ecd143b9352efd884d727231eaab6a98914886c
-  original:
+      sha256: 4238d07452e82c1834eb0541a69e3f7e8e7f53c46da516909a1423c5031dc0dd
+      size: 58988
     subdir: hvega
-    git: https://github.com/DougBurke/hvega
-    commit: 9ecd143b9352efd884d727231eaab6a98914886c
-- completed:
-    subdir: ihaskell-hvega
-    name: ihaskell-hvega
-    version: 0.5.0.2
-    git: https://github.com/DougBurke/hvega
-    pantry-tree:
-      size: 586
-      sha256: 4c6a70c17b6413fd9eea2e9c16560e1dc3059ec13df144fbeecbd5475a9b3901
-    commit: 9ecd143b9352efd884d727231eaab6a98914886c
+    version: 0.12.0.7
   original:
-    subdir: ihaskell-hvega
+    commit: 543db34bc154fe52c2843e58589846eb80192f44
     git: https://github.com/DougBurke/hvega
-    commit: 9ecd143b9352efd884d727231eaab6a98914886c
+    subdir: hvega
+- completed:
+    commit: 543db34bc154fe52c2843e58589846eb80192f44
+    git: https://github.com/DougBurke/hvega
+    name: ihaskell-hvega
+    pantry-tree:
+      sha256: 392b78566f14660ae5c74c56e5703362f2427d1c0298aed5d59437a910f69379
+      size: 586
+    subdir: ihaskell-hvega
+    version: 0.5.0.5
+  original:
+    commit: 543db34bc154fe52c2843e58589846eb80192f44
+    git: https://github.com/DougBurke/hvega
+    subdir: ihaskell-hvega
 snapshots:
 - completed:
-    size: 590100
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
-    sha256: 428ec8d5ce932190d3cbe266b9eb3c175cd81e984babf876b64019e2cbe4ea68
+    sha256: fb482b8e2d5d061cdda4ba1da2957c012740c893a5ee1c1b99001adae7b1fbe7
+    size: 640046
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/19.yaml
   original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/19.yaml

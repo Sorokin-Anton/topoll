@@ -1,15 +1,17 @@
 resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
+  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/19.yaml
 
 extra-deps:
 - git: https://github.com/Sorokin-Anton/QLinear
-  commit: f2e638e6c5a9fe53c78f1194ce123f01899b6558
+  commit: 23c6feea0a8d9fe5a01ab4f2cd731db8ceb5a73f
 - SmithNormalForm-0.1.0.0@sha256:c941b6cff6db301d933e1cf0cfadaa145b74939e8ad6e004348db46e71b76f72,1280
 - bed-and-breakfast-0.5@sha256:02b7f3f18b23f97cf70782f09bed746ecad751f331121a3a43fe97880c25fbce,1597
-- named-0.3.0.1@sha256:16c23f330b9f0373c464fee44d48dfa0f9d561f35bfe73dfd6ea69459688d4e5,2325
-
+- ihaskell-0.10.4.0@sha256:9dba189aa8ba97d422cb7c4d8ac26dca7c2619d48e56b276dfef78effe021cc3,6602
+- ghc-parser-0.2.5.0@sha256:62ebb3cb459e00752f926dd126ac4169a380d02849cfe5ffe344170329c17369,1496
 - git: https://github.com/DougBurke/hvega
-  commit: 9ecd143b9352efd884d727231eaab6a98914886c
+  commit: 543db34bc154fe52c2843e58589846eb80192f44
   subdirs:
   - hvega
   - ihaskell-hvega
+
+allow-newer: true
