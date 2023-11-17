@@ -3,21 +3,28 @@
 module Topoll.SimplicialSet where
 
 import Control.Monad
-import Data.List (sort, sortOn, groupBy, transpose)
-import qualified Data.Set as S
-import Topoll.ChainComplex.Field
-import qualified Data.Bifunctor
+import Data.Bifunctor qualified
 import Data.Function (on)
-import Topoll.ChainComplex.Type
-import Data.Proxy
-import GHC.TypeLits
+import Data.List (groupBy, sort, sortOn, transpose)
+import Data.Map qualified as M
 import Data.Maybe (fromJust)
-import QLinear (Matrix)
+import Data.Proxy
+import Data.Set qualified as S
+import GHC.TypeLits
 import Internal.Matrix (Matrix(..))
-import qualified Data.Map as M
+import Topoll.ChainComplex.Field
+import Topoll.ChainComplex.Type
 
 type Simplex  = S.Set Int
 
+{-| Simplicial set is a set that contains all subsets of its elements.
+  E.g. [[],1,2,[1,2]] represents a segment with two vertexes (1 and 2),
+  and
+  [[],
+  [1],[2],[3],
+  [1,2],[1,3],[2,3]]
+  is a border of triangle (the triangle itself is a full simplex that also contain [1,2,3])
+ -}
 newtype SimplicialSet = UnsafeSimplicialSet (S.Set Simplex) deriving Eq
 instance Show SimplicialSet where  show (UnsafeSimplicialSet a) = show $ map S.toAscList (S.toAscList a)
 
@@ -26,20 +33,6 @@ simplicialSet = UnsafeSimplicialSet . S.unions . S.map S.powerSet
 
 mkSimplicialSet :: [[Int]] -> SimplicialSet
 mkSimplicialSet = simplicialSet . S.fromList . map S.fromList
-
-noDuplicates :: Ord a => [a] -> Bool
-noDuplicates list = length list == S.size (S.fromList list)
-
-mkSimplicialSetNoDups :: [[Int]] -> Maybe SimplicialSet
-mkSimplicialSetNoDups lists = do
-  if not . all noDuplicates $ lists
-    then Nothing
-    else Just ()
-  let listSimplexs = map S.fromList lists
-  if not $ noDuplicates listSimplexs
-    then Nothing
-    else Just ()
-  return $ mkSimplicialSet lists
 
 vertices :: SimplicialSet -> S.Set Int
 vertices (UnsafeSimplicialSet s) = S.unions s
@@ -72,15 +65,12 @@ simplicialSetFullCheck lists = do
             Just $ S.insert simplex s
             else Nothing
 
-simplicial2dSphere :: SimplicialSet
-simplicial2dSphere = mkSimplicialSet
-  [[],
-  [1],[2],[3],
-  [1,2],[1,3],[2,3]]
-
+{- Set that contains simplexes of one size, like [[1,2], [3,4].
+   Of course, constructor `F` is unsafe. -}
 newtype SimplexsOfFixedSize = F (S.Set Simplex) deriving (Show, Eq)
+
 splitBySizes :: SimplicialSet -> [SimplexsOfFixedSize]
-splitBySizes (UnsafeSimplicialSet s) = map (F  . S.fromAscList) $ groupOn S.size $ sortOn S.size $ S.toAscList s
+splitBySizes (UnsafeSimplicialSet s) = map (F . S.fromList) $ groupOn S.size $ sortOn S.size $ S.toAscList s
   where groupOn f = groupBy ((==) `on` f)
 
 simplicialComplex :: forall a. (Num a, Eq a) => SimplicialSet -> SomeChainComplex a
@@ -106,7 +96,7 @@ simplicialComplex sc = addZeroToRight $  buildChainComplex $ reverse (tail $ spl
               matrix = Matrix (fromInteger $ natVal (Proxy @y), fromInteger $ natVal (Proxy @n))
                 (transpose rows)
            in SomeChainComplex $ UnsafeAddToRight prevCC matrix
-      _ -> error "Malformed SomeChainComplex"
+      SomeChainComplex ZeroComplex -> error "Unexpected ZeroComplex"
 
     addZeroToRight :: SomeChainComplex a -> SomeChainComplex a
     addZeroToRight (SomeChainComplex cc@(UnsafeAddToRight _ _)) = SomeChainComplex $ UnsafeAddToRight cc (zeroMatrix @_ @0)
@@ -115,7 +105,8 @@ simplicialComplex sc = addZeroToRight $  buildChainComplex $ reverse (tail $ spl
 simplicialHomologyOverQ :: SimplicialSet -> [BettiNumber]
 simplicialHomologyOverQ sc = case simplicialComplex sc of
   SomeChainComplex cc -> bettiNumbers cc
--- >>> simplicialHomologyOverQ simplicial2dSphere
+-- >>> let simplicialCircle = mkSimplicialSet [[1,2], [2,3], [1,3]] in simplicialHomologyOverQ simplicialCircle
+-- [1,1]
 
 
 data Sign = Plus | Minus deriving (Show, Eq)
@@ -130,10 +121,10 @@ simplexBorder = M.fromList . map (Data.Bifunctor.first S.fromAscList) . helper P
   helper sign (x:xs) = (xs, sign) : map (Data.Bifunctor.first (x:)) (helper (reverseSign sign) xs)
 
 -- >>> simplexBorder [1,2,3,4,5]
--- [(Plus,fromList [2,3,4,5]),(Minus,fromList [1,3,4,5]),(Plus,fromList [1,2,4,5]),(Minus,fromList [1,2,3,5]),(Plus,fromList [1,2,3,4])]
+-- fromList [(fromList [1,2,3,4],Plus),(fromList [1,2,3,5],Minus),(fromList [1,2,4,5],Plus),(fromList [1,3,4,5],Minus),(fromList [2,3,4,5],Plus)]
 
 flagN :: Int -> SimplicialSet -> SimplicialSet -- adds simplices up to dimension n with all edges present in original simplicial set
-flagN n = foldr (\f g -> g . f) id (map flag' [1..n])
+flagN n = foldr ((\f g -> g . f) . flag') id ([1..n] :: [Int])
  where
   flag' :: Int -> SimplicialSet -> SimplicialSet
   flag' n' sc@(UnsafeSimplicialSet s') = UnsafeSimplicialSet . S.union s' . S.fromList $ do
@@ -157,8 +148,8 @@ testSC = mkSimplicialSet [
 -- saveSimpl :: SimplicialSet -> IO ()
 -- saveSimpl (UnsafeSimplicialSet s) = writeFile "simp.simp" . intercalate "\n" . map (unwords . map show . S.toList) . S.toList $ s
 
--- >>> mkSimplicialSetNoDups [[1, 2],[2, 3],[1, 3],[1, 4] ]
--- Just [[],[1],[1,2],[1,3],[1,4],[2],[2,3],[3],[4]]
+-- >>> mkSimplicialSet [[1, 2],[2, 3],[1, 3],[1, 4] ]
+-- [[],[1],[1,2],[1,3],[1,4],[2],[2,3],[3],[4]]
 
--- >>> show $ flag $ testSC
--- /home/imobulus/imobulus/hse/4th-year/topan/topoll/src/Topoll/SimplicialSet.hs:(103,1)-(108,2): Non-exhaustive patterns in Just testSC
+-- >>> flag $ testSC
+-- [[],[1],[1,2],[1,2,3],[1,3],[1,4],[2],[2,3],[3],[4]]

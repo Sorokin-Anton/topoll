@@ -1,23 +1,23 @@
 module Topoll.Complexes.Witness where
 
-import qualified Data.Vector as V
-import Data.Vector ( (!?), modify, Vector, enumFromN )
-import qualified Data.Set as S
-import Data.Set ( insert, union, Set )
-import qualified Data.Vector.Algorithms.Merge as VA
+import Data.Set (Set, insert, union)
+import Data.Set qualified as S
+import Data.Vector (Vector, enumFromN, modify, (!?))
+import Data.Vector qualified as V
+import Data.Vector.Algorithms.Merge qualified as VA
 
-import Topoll.SimplicialSet
-import Topoll.DistanceMatrix.DistanceMatrix
 import Named
+import Topoll.DistanceMatrix.DistanceMatrix
+import Topoll.SimplicialSet
 
 ithSmallest :: Vector Float -> Int -> Maybe Float
 ithSmallest vec i = vecSorted !? (i-1) where
   vecSorted = modify VA.sort vec
 
--- >>> let v = fromList [1.0, 2.0, 3.0] in ithSmallest v 1
+-- >>> let v = V.fromList [1.0, 2.0, 3.0] in ithSmallest v 1
 -- Just 1.0
 
--- >>> let v = fromList [1.0, 2.0, 3.0] in ithSmallest v 0
+-- >>> let v = V.fromList [1.0, 2.0, 3.0] in ithSmallest v 0
 -- Nothing
 
 mi :: Vector Float -> Int -> Maybe Float
@@ -28,11 +28,13 @@ pairs :: Ord a => [a] -> Set (a, a)
 pairs [] = S.empty
 pairs (a : as) = pairs as `union` pairsWith a as where
   pairsWith _ [] = S.empty
-  pairsWith b (c : cs) = insert (b, c) (pairsWith c cs)
+  pairsWith b (c : cs) = insert (b, c) (pairsWith b cs)
 
+-- >>> pairs [1,2,3,4]
+-- fromList [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
 
 edges :: DistanceMatrix -> ("r" :! Float) -> ("nu" :! Int) -> Either String (Set (Int, Int))
-edges dd (Arg r) (Arg nu) = edges' $ take (V.length dd) $ enumFrom (0 :: Int) where
+edges (DistanceMatrix dd) (Arg r) (Arg nu) = edges' $ take (V.length dd) $ enumFrom (0 :: Int) where
   edges' [] = return S.empty
   edges' (i : is) = do
     wEdges <- witnessEdges i
@@ -53,8 +55,8 @@ edges dd (Arg r) (Arg nu) = edges' $ take (V.length dd) $ enumFrom (0 :: Int) wh
 
 
 witnessSet :: DistanceMatrix -> ("r" :! Float) -> ("nu" :! Int) -> Either String SimplicialSet
-witnessSet dd r nu = do
-  edg <- edges dd r nu
+witnessSet (DistanceMatrix dd) r nu = do
+  edg <- edges (DistanceMatrix dd) r nu
   let allEdges = S.map (\(a, b) -> S.fromList [a, b]) edg
   let allVertices = case dd !? 0 of
         Nothing -> S.empty :: Set (Set Int)

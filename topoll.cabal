@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -42,9 +42,11 @@ library
       ViewPatterns
       TypeOperators
       OverloadedLabels
+      OverloadedStrings
       TypeApplications
       GADTs
       KindSignatures
+      ImportQualifiedPost
   ghc-options: -Wall -O2
   build-depends:
       SmithNormalForm
@@ -56,6 +58,7 @@ library
     , hvega
     , ihaskell-hvega
     , named
+    , optparse-generic
     , parallel
     , qlinear
     , random
@@ -75,9 +78,11 @@ executable topoll-exe
       ViewPatterns
       TypeOperators
       OverloadedLabels
+      OverloadedStrings
       TypeApplications
       GADTs
       KindSignatures
+      ImportQualifiedPost
   ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       SmithNormalForm
@@ -89,6 +94,7 @@ executable topoll-exe
     , hvega
     , ihaskell-hvega
     , named
+    , optparse-generic
     , parallel
     , qlinear
     , random
@@ -112,9 +118,11 @@ test-suite topoll-test
       ViewPatterns
       TypeOperators
       OverloadedLabels
+      OverloadedStrings
       TypeApplications
       GADTs
       KindSignatures
+      ImportQualifiedPost
   ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       SmithNormalForm
@@ -127,6 +135,7 @@ test-suite topoll-test
     , hvega
     , ihaskell-hvega
     , named
+    , optparse-generic
     , parallel
     , qlinear
     , random

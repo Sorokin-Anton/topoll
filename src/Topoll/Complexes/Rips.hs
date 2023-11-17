@@ -1,13 +1,13 @@
 module Topoll.Complexes.Rips where
 
-import qualified Data.Vector as V
-import Data.Vector ( Vector )
-import qualified Data.Set as S
 import Data.Set ()
+import Data.Set qualified as S
+import Data.Vector (Vector)
+import Data.Vector qualified as V
 
-import Topoll.SimplicialSet
-import Topoll.DistanceMatrix.DistanceMatrix
 import Named
+import Topoll.DistanceMatrix.DistanceMatrix
+import Topoll.SimplicialSet
 
 ripsEdges :: Vector Point -> ("r" :! Float) -> SimplicialSet
 ripsEdges dd (Arg r) = simplicialSet ripsEdges' where
@@ -16,5 +16,8 @@ ripsEdges dd (Arg r) = simplicialSet ripsEdges' where
   indexedD d = V.zip (V.fromList [0, 1 .. V.length d - 1]) d
   ripsEdges'' i d = V.foldl (\s (j, dist) -> if dist > 2 * r then s else S.insert (S.fromList [i, j]) s) S.empty (indexedD d)
 
+{-| Given a point set, a Vietoris–Rips complex consists of all those simplices
+ whose vertices are at pairwise distance no more than `r`
+-}
 ripsSet :: DistanceMatrix -> ("r" :! Float) -> SimplicialSet
-ripsSet dd = flag . ripsEdges dd
+ripsSet (DistanceMatrix dd) = flag . ripsEdges dd

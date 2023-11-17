@@ -32,15 +32,18 @@ dependencies:
 - hvega
 - ihaskell-hvega
 - text
+- optparse-generic
 
 default-extensions:
 - DataKinds
 - ViewPatterns
 - TypeOperators
 - OverloadedLabels
+- OverloadedStrings
 - TypeApplications
 - GADTs
 - KindSignatures
+- ImportQualifiedPost
 
 library:
   source-dirs: src

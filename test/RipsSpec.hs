@@ -1,6 +1,6 @@
 module RipsSpec where
 import qualified Data.Vector as V
-import Topoll.DistanceMatrix.DistanceMatrix ( DistanceMatrix )
+import Topoll.DistanceMatrix.DistanceMatrix ( DistanceMatrix (DistanceMatrix) )
 import Topoll.Complexes.Rips
 import Topoll.SimplicialSet
 import Test.Hspec
@@ -10,7 +10,7 @@ distance :: (Float, Float) -> (Float, Float) -> Float
 distance (a, b) (c, d) = sqrt $ (a - c) * (a - c) + (b - d) * (b - d)
 
 distanceMatrix :: [(Float, Float)] -> [(Float, Float)] -> DistanceMatrix
-distanceMatrix dataPoints landmarkPoints = V.fromList . map V.fromList $ distanceMatrixList dataPoints landmarkPoints where
+distanceMatrix dataPoints landmarkPoints = DistanceMatrix . V.fromList . map V.fromList $ distanceMatrixList dataPoints landmarkPoints where
   distanceMatrixList [] _ = []
   distanceMatrixList (p : ps) lPoints = map (distance p) lPoints : distanceMatrixList ps lPoints
 

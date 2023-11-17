@@ -1,2 +1,13 @@
 cradle:
   stack:
+    - path: "./src"
+      component: "topoll:lib"
+
+    - path: "./app/Main.hs"
+      component: "topoll:exe:topoll-exe"
+
+    - path: "./app/Paths_topoll.hs"
+      component: "topoll:exe:topoll-exe"
+
+    - path: "./test"
+      component: "topoll:test:topoll-test"

@@ -1,14 +1,24 @@
 module Topoll.DistanceMatrix.DistanceMatrix
-    (Point, DistanceMatrix, AggregatedData(..), chooseMaxminLandmarks, chooseRandomLandmarks, computeDistanceMatrix, computeTotalDistanceMatrix) where
+    ( Point
+    , DistanceMatrix(..)
+    , AggregatedData(..)
+    , chooseMaxminLandmarks
+    , chooseRandomLandmarks
+    , computeDistanceMatrix
+    , computeTotalDistanceMatrix
+    ) where
 
-import qualified Data.Vector as V
+import Data.Functor
+import Data.List (intercalate)
 import Data.Vector (Vector, (!))
+import Data.Vector qualified as V
 import Numeric.Natural
 import System.Random
-import Data.Functor
 
 type Point = Vector Float
-type DistanceMatrix = Vector (Vector Float)
+
+-- * Matrix with distances between landmark and data points
+newtype DistanceMatrix = DistanceMatrix (Vector (Vector Float))
 
 
 data AggregatedData = AggregatedData {
@@ -17,7 +27,7 @@ data AggregatedData = AggregatedData {
 } deriving (Eq, Show)
 
 euclideanMetric :: Vector Float -> Vector Float -> Float
-euclideanMetric v1 v2 = sqrt $ V.sum (V.zip v1 v2 <&> (\(x, y) -> (x - y)*(x - y)))
+euclideanMetric v1 v2 = sqrt $ V.sum (V.zipWith (\x y -> (x - y) ^ (2 :: Integer)) v1 v2)
 
 distToVectors :: Vector Float -> Vector (Vector Float) -> Vector Float
 distToVectors vec points = euclideanMetric vec <$> points
@@ -66,8 +76,17 @@ chooseRandomLandmarks numberOfLandmarksToChoose samplePoints =
 {- Compute distance matrix from the aggregated data (landmarks and data points) -}
 computeDistanceMatrix :: AggregatedData -> DistanceMatrix
 computeDistanceMatrix (AggregatedData landmarks dpoints) =
-    (`distToVectors` landmarks) <$> dpoints
+   DistanceMatrix $ (`distToVectors` landmarks) <$> dpoints
 
 {- Compute distances between all points -}
 computeTotalDistanceMatrix :: Vector Point -> DistanceMatrix
 computeTotalDistanceMatrix points = computeDistanceMatrix (AggregatedData points points)
+
+instance Show DistanceMatrix where
+  show (DistanceMatrix vm) =
+    let m = V.toList (V.toList <$> vm) in
+    let longest_str = maximum (length . show <$> concat m) in
+    intercalate "\n" $
+      map (unwords .
+        map (\x -> let s = show x in s <> replicate (longest_str - length s) ' '))
+      m

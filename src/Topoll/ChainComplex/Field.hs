@@ -28,15 +28,12 @@ removeZeroRows = filter (any (/= 0))
 
 matrixRankOverFieldNaive :: forall m n a.  (Eq a, Num a) =>  Matrix m n a -> Integer
 matrixRankOverFieldNaive = f . value where
-
-
-
   f :: [[a]] -> Integer
   f m = case removeZeroRows $ removeZeroColumns m of
     [] -> 0
     m' -> 1 + let (a, goodRow : b) = break ((0 /=) . head) m'
               in  f $ map
-                (\row -> zipWith subtract (map (*head row) goodRow) (map (*head goodRow) row))
+                (\row -> zipWith subtract (map (*head row) goodRow) (map (* head goodRow) row))
                 $ a ++ b
 
 
